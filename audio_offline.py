@@ -2,6 +2,7 @@ import speech_recognition as sr
 import subprocess
 from os import path
 import requests
+import markovify
 
 # OFFLINE VERSION OF AUDIO RECOGNITION SCRIPT
 # FFMPEG MUST BE INSTALLED. RUN brew install ffmpeg ON A MAC.
@@ -42,7 +43,7 @@ except sr.RequestError as e:
 with sr.AudioFile(AUDIO_FILE) as source:
     audio = r.record(source)
 try:
-    output=r.recognize_google(audio)
+    output=r.recognize_sphinx(audio)
     print(output)
     # uncomment the below once the server is up
     """
@@ -53,6 +54,13 @@ except sr.UnknownValueError:
 except sr.RequestError as e:
     print("Could not request results from Google Speech Recognition service; {0}".format(e))
 
+with open("output.txt", 'w') as f:
+    f.write(output)
+
+text_model = markovify.Text(output)
+
+for i in range(5):
+    print(text_model.make_sentence())
 
 # for later maybe
 # write audio to a RAW file
